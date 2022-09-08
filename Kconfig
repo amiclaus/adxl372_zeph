@@ -14,23 +14,6 @@ menuconfig ADXL372
 
 if ADXL372
 
-choice ADXL372_BUS_TYPE
-	prompt "Interface type"
-	default ADXL372_I2C if $(dt_compat_on_bus,$(DT_COMPAT_ADI_ADXL372),i2c)
-	default ADXL372_SPI if $(dt_compat_on_bus,$(DT_COMPAT_ADI_ADXL372),spi)
-	help
-	  Select interface the digital interface type for the ADXL372
-
-config ADXL372_I2C
-	depends on I2C
-	bool "I2C Interface"
-
-config ADXL372_SPI
-	depends on SPI
-	bool "SPI Interface"
-
-endchoice
-
 choice ADXL372_OP_MODE
 	prompt "Operating mode"
 	default ADXL372_PEAK_DETECT_MODE
