@@ -278,9 +278,23 @@ struct adxl372_xyz_accel_data {
 	int16_t z;
 };
 
+struct adxl372_data;
+
+struct adxl372_transfer_function {
+	int (*read_reg_multiple)(const struct device *dev, uint8_t reg_addr,
+				 uint8_t *value, uint16_t len);
+	int (*write_reg)(const struct device *dev, uint8_t reg_addr,
+			 uint8_t *value, uint8_t len);
+	int (*read_reg)(const struct device *dev, uint8_t reg_addr,
+			uint8_t *value);
+	int (*write_reg_mask)(const struct device *dev, uint8_t reg_addr,
+			      uint8_t mask, uint8_t value);
+};
+
 struct adxl372_data {
 	struct adxl372_xyz_accel_data sample;
 	struct adxl372_fifo_config fifo_config;
+	const struct adxl372_transfer_function *hw_tf;
 
 #ifdef CONFIG_ADXL372_TRIGGER
 	struct gpio_callback gpio_cb;
@@ -308,6 +322,7 @@ struct adxl372_dev_config {
 #ifdef CONFIG_ADXL372_SPI
 	struct spi_dt_spec spi;
 #endif /* CONFIG_ADXL372_SPI */
+	int (*bus_init)(const struct device *dev);
 #ifdef CONFIG_ADXL372_TRIGGER
 	struct gpio_dt_spec interrupt;
 #endif
