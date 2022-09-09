@@ -651,6 +651,74 @@ static int adxl372_probe(const struct device *dev)
 		return -ENODEV;
 	}
 
+	.max_peak_detect_mode = IS_ENABLED(CONFIG_ADXL372_PEAK_DETECT_MODE),
+
+#ifdef CONFIG_ADXL372_ODR_400HZ
+	cfg->odr = ADXL372_ODR_400HZ,
+#elif CONFIG_ADXL372_ODR_800HZ
+	cfg->odr = ADXL372_ODR_800HZ,
+#elif CONFIG_ADXL372_ODR_1600HZ
+	cfg->odr = ADXL372_ODR_1600HZ,
+#elif CONFIG_ADXL372_ODR_3200HZ
+	cfg->odr = ADXL372_ODR_3200HZ,
+#elif CONFIG_ADXL372_ODR_6400HZ
+	cfg->odr = ADXL372_ODR_6400HZ,
+#endif
+
+#ifdef CONFIG_ADXL372_BW_200HZ
+	cfg->bw = ADXL372_BW_200HZ,
+#elif CONFIG_ADXL372_BW_400HZ
+	cfg->bw = ADXL372_BW_400HZ,
+#elif CONFIG_ADXL372_BW_800HZ
+	cfg->bw = ADXL372_BW_800HZ,
+#elif CONFIG_ADXL372_BW_1600HZ
+	cfg->bw = ADXL372_BW_1600HZ,
+#elif CONFIG_ADXL372_BW_3200HZ
+	cfg->bw = ADXL372_BW_3200HZ,
+#elif CONFIG_ADXL372_LPF_DISABLE
+	cfg->bw = ADXL372_BW_LPF_DISABLED,
+#endif
+
+#ifdef CONFIG_ADXL372_HPF_CORNER0
+	cfg->hpf = ADXL372_HPF_CORNER_0,
+#elif CONFIG_ADXL372_HPF_CORNER1
+	cfg->hpf = ADXL372_HPF_CORNER_1,
+#elif CONFIG_ADXL372_HPF_CORNER2
+	cfg->hpf = ADXL372_HPF_CORNER_2,
+#elif CONFIG_ADXL372_HPF_CORNER3
+	cfg->hpf = ADXL372_HPF_CORNER_3,
+#elif CONFIG_ADXL372_HPF_DISABLE
+	cfg->hpf = ADXL372_HPF_DISABLED,
+#endif
+
+#ifdef CONFIG_ADXL372_TRIGGER
+	cfg->act_proc_mode = ADXL372_LINKED,
+#else
+	cfg->act_proc_mode = ADXL372_LOOPED,
+#endif
+	cfg->th_mode = ADXL372_INSTANT_ON_LOW_TH,
+	cfg->autosleep = false,
+	cfg->wur = ADXL372_WUR_52ms,
+
+	cfg->activity_th.thresh = CONFIG_ADXL372_ACTIVITY_THRESHOLD / 100,
+	cfg->activity_th.referenced =
+		IS_ENABLED(CONFIG_ADXL372_REFERENCED_ACTIVITY_DETECTION_MODE),
+	cfg->activity_th.enable = 1,
+	cfg->activity_time = CONFIG_ADXL372_ACTIVITY_TIME,
+
+	cfg->inactivity_th.thresh = CONFIG_ADXL372_INACTIVITY_THRESHOLD / 100,
+	cfg->inactivity_th.referenced =
+		IS_ENABLED(CONFIG_ADXL372_REFERENCED_ACTIVITY_DETECTION_MODE),
+	cfg->inactivity_th.enable = 1,
+	cfg->inactivity_time = CONFIG_ADXL372_INACTIVITY_TIME,
+
+	cfg->filter_settle = ADXL372_FILTER_SETTLE_370,
+	cfg->fifo_config.fifo_mode = ADXL372_FIFO_STREAMED,
+	cfg->fifo_config.fifo_format = ADXL372_XYZ_PEAK_FIFO,
+	cfg->fifo_config.fifo_samples = 128,
+
+	cfg->op_mode = ADXL372_FULL_BW_MEASUREMENT,
+
 	/* Device settings */
 	ret = adxl372_set_op_mode(dev, ADXL372_STANDBY);
 	if (ret) {
@@ -763,88 +831,6 @@ static int adxl372_init(const struct device *dev)
 
 	return 0;
 }
-
-static struct adxl372_data adxl372_data;
-
-static const struct adxl372_dev_config adxl372_config = {
-#ifdef CONFIG_ADXL372_I2C
-	.i2c = I2C_DT_SPEC_INST_GET(0),
-#endif
-#ifdef CONFIG_ADXL372_SPI
-	.spi = SPI_DT_SPEC_INST_GET(0, SPI_WORD_SET(8) | SPI_TRANSFER_MSB, 0),
-#endif
-#ifdef CONFIG_ADXL372_TRIGGER
-	.interrupt = GPIO_DT_SPEC_INST_GET(0, int1_gpios),
-#endif
-
-	.max_peak_detect_mode = IS_ENABLED(CONFIG_ADXL372_PEAK_DETECT_MODE),
-
-#ifdef CONFIG_ADXL372_ODR_400HZ
-	.odr = ADXL372_ODR_400HZ,
-#elif CONFIG_ADXL372_ODR_800HZ
-	.odr = ADXL372_ODR_800HZ,
-#elif CONFIG_ADXL372_ODR_1600HZ
-	.odr = ADXL372_ODR_1600HZ,
-#elif CONFIG_ADXL372_ODR_3200HZ
-	.odr = ADXL372_ODR_3200HZ,
-#elif CONFIG_ADXL372_ODR_6400HZ
-	.odr = ADXL372_ODR_6400HZ,
-#endif
-
-#ifdef CONFIG_ADXL372_BW_200HZ
-	.bw = ADXL372_BW_200HZ,
-#elif CONFIG_ADXL372_BW_400HZ
-	.bw = ADXL372_BW_400HZ,
-#elif CONFIG_ADXL372_BW_800HZ
-	.bw = ADXL372_BW_800HZ,
-#elif CONFIG_ADXL372_BW_1600HZ
-	.bw = ADXL372_BW_1600HZ,
-#elif CONFIG_ADXL372_BW_3200HZ
-	.bw = ADXL372_BW_3200HZ,
-#elif CONFIG_ADXL372_LPF_DISABLE
-	.bw = ADXL372_BW_LPF_DISABLED,
-#endif
-
-#ifdef CONFIG_ADXL372_HPF_CORNER0
-	.hpf = ADXL372_HPF_CORNER_0,
-#elif CONFIG_ADXL372_HPF_CORNER1
-	.hpf = ADXL372_HPF_CORNER_1,
-#elif CONFIG_ADXL372_HPF_CORNER2
-	.hpf = ADXL372_HPF_CORNER_2,
-#elif CONFIG_ADXL372_HPF_CORNER3
-	.hpf = ADXL372_HPF_CORNER_3,
-#elif CONFIG_ADXL372_HPF_DISABLE
-	.hpf = ADXL372_HPF_DISABLED,
-#endif
-
-#ifdef CONFIG_ADXL372_TRIGGER
-	.act_proc_mode = ADXL372_LINKED,
-#else
-	.act_proc_mode = ADXL372_LOOPED,
-#endif
-	.th_mode = ADXL372_INSTANT_ON_LOW_TH,
-	.autosleep = false,
-	.wur = ADXL372_WUR_52ms,
-
-	.activity_th.thresh = CONFIG_ADXL372_ACTIVITY_THRESHOLD / 100,
-	.activity_th.referenced =
-		IS_ENABLED(CONFIG_ADXL372_REFERENCED_ACTIVITY_DETECTION_MODE),
-	.activity_th.enable = 1,
-	.activity_time = CONFIG_ADXL372_ACTIVITY_TIME,
-
-	.inactivity_th.thresh = CONFIG_ADXL372_INACTIVITY_THRESHOLD / 100,
-	.inactivity_th.referenced =
-		IS_ENABLED(CONFIG_ADXL372_REFERENCED_ACTIVITY_DETECTION_MODE),
-	.inactivity_th.enable = 1,
-	.inactivity_time = CONFIG_ADXL372_INACTIVITY_TIME,
-
-	.filter_settle = ADXL372_FILTER_SETTLE_370,
-	.fifo_config.fifo_mode = ADXL372_FIFO_STREAMED,
-	.fifo_config.fifo_format = ADXL372_XYZ_PEAK_FIFO,
-	.fifo_config.fifo_samples = 128,
-
-	.op_mode = ADXL372_FULL_BW_MEASUREMENT,
-};
 
 #if DT_NUM_INST_STATUS_OKAY(DT_DRV_COMPAT) == 0
 #warning "ADXL372 driver enabled without any devices"
