@@ -316,10 +316,10 @@ struct adxl372_data {
 };
 
 struct adxl372_dev_config {
-#ifdef CONFIG_ADXL372_I2C
+#if DT_ANY_INST_ON_BUS_STATUS_OKAY(i2c)
 	struct i2c_dt_spec i2c;
 #endif
-#ifdef CONFIG_ADXL372_SPI
+#if DT_ANY_INST_ON_BUS_STATUS_OKAY(spi)
 	struct spi_dt_spec spi;
 #endif /* CONFIG_ADXL372_SPI */
 	int (*bus_init)(const struct device *dev);
