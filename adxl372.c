@@ -6,16 +6,14 @@
 
 #define DT_DRV_COMPAT adi_adxl372
 
-#include <zephyr/kernel.h>
-#include <string.h>
 #include <zephyr/drivers/sensor.h>
+#include <zephyr/kernel.h>
+#include <zephyr/device.h>
+#include <string.h>
 #include <zephyr/init.h>
-#include <zephyr/drivers/gpio.h>
 #include <zephyr/sys/printk.h>
 #include <zephyr/sys/__assert.h>
 #include <stdlib.h>
-#include <zephyr/drivers/spi.h>
-#include <zephyr/drivers/i2c.h>
 #include <zephyr/logging/log.h>
 
 #include "adxl372.h"
@@ -867,7 +865,7 @@ static int adxl372_init(const struct device *dev)
 			    adxl372_init,				\
 			    NULL,					\
 			    &adxl372_data_##inst,			\
-			    &adxl372_dev_config_##inst,			\
+			    &adxl372_config_##inst,			\
 			    POST_KERNEL,				\
 			    CONFIG_SENSOR_INIT_PRIORITY,		\
 			    &adxl372_api_funcs);
@@ -906,7 +904,7 @@ static int adxl372_init(const struct device *dev)
 	{								\
 		.bus_init = adxl372_i2c_init,				\
 		.i2c = I2C_DT_SPEC_INST_GET(inst),			\
-		COND_CODE_1(DT_INST_NODE_HAS_PROP(inst, irq_gpios),	\
+		COND_CODE_1(DT_INST_NODE_HAS_PROP(inst, int1_gpios),	\
 		(ADXL372_CFG_IRQ(inst)), ())				\
 	}
 
