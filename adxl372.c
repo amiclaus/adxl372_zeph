@@ -35,6 +35,7 @@ static int adxl372_set_activity_threshold(const struct device *dev,
 {
 	int ret;
 	uint8_t val;
+	struct adxl372_data *data = dev->data;
 
 	ret = data->hw_tf->write_reg(dev, axis_reg_h++, act->thresh >> 3);
 	if (ret) {
@@ -91,6 +92,8 @@ static int adxl372_set_activity_threshold_xyz(const struct device *dev,
 static int adxl372_set_op_mode(const struct device *dev,
 			       enum adxl372_op_mode op_mode)
 {
+	struct adxl372_data *data = dev->data;
+
 	return data->hw_tf->write_reg_mask(dev, ADXL372_POWER_CTL,
 				      ADXL372_POWER_CTL_MODE_MSK,
 				      ADXL372_POWER_CTL_MODE(op_mode));
@@ -106,6 +109,8 @@ static int adxl372_set_op_mode(const struct device *dev,
  */
 static int adxl372_set_autosleep(const struct device *dev, bool enable)
 {
+	struct adxl372_data *data = dev->data;
+
 	return data->hw_tf->write_reg_mask(dev, ADXL372_MEASURE,
 				      ADXL372_MEASURE_AUTOSLEEP_MSK,
 				      ADXL372_MEASURE_AUTOSLEEP_MODE(enable));
@@ -128,6 +133,7 @@ static int adxl372_set_bandwidth(const struct device *dev,
 {
 	int ret;
 	uint8_t mask;
+	struct adxl372_data *data = dev->data;
 
 	if (bw == ADXL372_BW_LPF_DISABLED) {
 		mask = ADXL372_POWER_CTL_LPF_DIS_MSK;
@@ -163,6 +169,7 @@ static int adxl372_set_hpf_corner(const struct device *dev,
 
 	int ret;
 	uint8_t mask;
+	struct adxl372_data *data = dev->data;
 
 	if (c == ADXL372_HPF_DISABLED) {
 		mask = ADXL372_POWER_CTL_HPF_DIS_MSK;
@@ -192,6 +199,8 @@ static int adxl372_set_hpf_corner(const struct device *dev,
 static int adxl372_set_act_proc_mode(const struct device *dev,
 				     enum adxl372_act_proc_mode mode)
 {
+	struct adxl372_data *data = dev->data;
+
 	return data->hw_tf->write_reg_mask(dev, ADXL372_MEASURE,
 				      ADXL372_MEASURE_LINKLOOP_MSK,
 				      ADXL372_MEASURE_LINKLOOP_MODE(mode));
@@ -210,6 +219,8 @@ static int adxl372_set_act_proc_mode(const struct device *dev,
  */
 static int adxl372_set_odr(const struct device *dev, enum adxl372_odr odr)
 {
+	struct adxl372_data *data = dev->data;
+
 	return data->hw_tf->write_reg_mask(dev, ADXL372_TIMING,
 				      ADXL372_TIMING_ODR_MSK,
 				      ADXL372_TIMING_ODR_MODE(odr));
@@ -226,6 +237,8 @@ static int adxl372_set_odr(const struct device *dev, enum adxl372_odr odr)
 static int adxl372_set_instant_on_th(const struct device *dev,
 				     enum adxl372_instant_on_th_mode mode)
 {
+	struct adxl372_data *data = dev->data;
+
 	return data->hw_tf->write_reg_mask(dev, ADXL372_POWER_CTL,
 				ADXL372_POWER_CTL_INSTANT_ON_TH_MSK,
 				ADXL372_POWER_CTL_INSTANT_ON_TH_MODE(mode));
@@ -248,6 +261,8 @@ static int adxl372_set_instant_on_th(const struct device *dev,
 static int adxl372_set_wakeup_rate(const struct device *dev,
 				   enum adxl372_wakeup_rate wur)
 {
+	struct adxl372_data *data = dev->data;
+
 	return data->hw_tf->write_reg_mask(dev, ADXL372_TIMING,
 				      ADXL372_TIMING_WAKE_UP_RATE_MSK,
 				      ADXL372_TIMING_WAKE_UP_RATE_MODE(wur));
@@ -261,6 +276,8 @@ static int adxl372_set_wakeup_rate(const struct device *dev,
  */
 static int adxl372_set_activity_time(const struct device *dev, uint8_t time)
 {
+	struct adxl372_data *data = dev->data;
+
 	return data->hw_tf->write_reg(dev, ADXL372_TIME_ACT, time);
 }
 
@@ -275,6 +292,7 @@ static int adxl372_set_inactivity_time(const struct device *dev,
 				       uint16_t time)
 {
 	int ret;
+	struct adxl372_data *data = dev->data;
 
 	ret = data->hw_tf->write_reg(dev, ADXL372_TIME_INACT_H, time >> 8);
 	if (ret) {
@@ -295,6 +313,8 @@ static int adxl372_set_inactivity_time(const struct device *dev,
 static int adxl372_set_filter_settle(const struct device *dev,
 				     enum adxl372_filter_settle mode)
 {
+	struct adxl372_data *data = dev->data;
+
 	return data->hw_tf->write_reg_mask(dev, ADXL372_POWER_CTL,
 				      ADXL372_POWER_CTL_FIL_SETTLE_MSK,
 				      ADXL372_POWER_CTL_FIL_SETTLE_MODE(mode));
@@ -312,6 +332,7 @@ static int adxl372_interrupt_config(const struct device *dev,
 				    uint8_t int2)
 {
 	int ret;
+	struct adxl372_data *data = dev->data;
 
 	ret = data->hw_tf->write_reg(dev, ADXL372_INT1_MAP, int1);
 	if (ret) {
@@ -336,6 +357,7 @@ int adxl372_get_status(const struct device *dev,
 			   uint8_t *status2,
 			   uint16_t *fifo_entries)
 {
+	struct adxl372_data *data = dev->data;
 	uint8_t buf[4], length = 1U;
 	int ret;
 
@@ -370,6 +392,7 @@ int adxl372_get_status(const struct device *dev,
 static int adxl372_reset(const struct device *dev)
 {
 	int ret;
+	struct adxl372_data *data = dev->data;
 
 	ret = adxl372_set_op_mode(dev, ADXL372_STANDBY);
 	if (ret) {
@@ -514,7 +537,7 @@ static int adxl372_attr_set_thresh(const struct device *dev,
 				   enum sensor_attribute attr,
 				   const struct sensor_value *val)
 {
-	const struct adxl372_dev_config *cfg = dev->config;
+	struct adxl372_data *data = dev->data;
 	struct adxl372_activity_threshold threshold;
 	int64_t llvalue;
 	int32_t value;
@@ -530,8 +553,8 @@ static int adxl372_attr_set_thresh(const struct device *dev,
 	value = (int32_t) llvalue;
 
 	threshold.thresh = value;
-	threshold.enable = cfg->activity_th.enable;
-	threshold.referenced = cfg->activity_th.referenced;
+	threshold.enable = data->activity_th.enable;
+	threshold.referenced = data->activity_th.referenced;
 
 	if (attr ==  SENSOR_ATTR_UPPER_THRESH) {
 		reg = ADXL372_X_THRESH_ACT_H;
@@ -574,9 +597,8 @@ static int adxl372_sample_fetch(const struct device *dev,
 				enum sensor_channel chan)
 {
 	struct adxl372_data *data = dev->data;
-	const struct adxl372_dev_config *cfg = dev->config;
 
-	return adxl372_get_accel_data(dev, cfg->max_peak_detect_mode,
+	return adxl372_get_accel_data(dev, data->max_peak_detect_mode,
 				      &data->sample);
 }
 
@@ -632,8 +654,7 @@ static const struct sensor_driver_api adxl372_api_funcs = {
 
 static int adxl372_probe(const struct device *dev)
 {
-	const struct adxl372_dev_config *cfg = dev->config;
-	const struct adxl372_data *data = dev->data;
+	struct adxl372_data *data = dev->data;
 	uint8_t dev_id, part_id;
 	int ret;
 
@@ -651,73 +672,73 @@ static int adxl372_probe(const struct device *dev)
 		return -ENODEV;
 	}
 
-	.max_peak_detect_mode = IS_ENABLED(CONFIG_ADXL372_PEAK_DETECT_MODE),
+	data->max_peak_detect_mode = IS_ENABLED(CONFIG_ADXL372_PEAK_DETECT_MODE),
 
 #ifdef CONFIG_ADXL372_ODR_400HZ
-	cfg->odr = ADXL372_ODR_400HZ,
+	data->odr = ADXL372_ODR_400HZ,
 #elif CONFIG_ADXL372_ODR_800HZ
-	cfg->odr = ADXL372_ODR_800HZ,
+	data->odr = ADXL372_ODR_800HZ,
 #elif CONFIG_ADXL372_ODR_1600HZ
-	cfg->odr = ADXL372_ODR_1600HZ,
+	data->odr = ADXL372_ODR_1600HZ,
 #elif CONFIG_ADXL372_ODR_3200HZ
-	cfg->odr = ADXL372_ODR_3200HZ,
+	data->odr = ADXL372_ODR_3200HZ,
 #elif CONFIG_ADXL372_ODR_6400HZ
-	cfg->odr = ADXL372_ODR_6400HZ,
+	data->odr = ADXL372_ODR_6400HZ,
 #endif
 
 #ifdef CONFIG_ADXL372_BW_200HZ
-	cfg->bw = ADXL372_BW_200HZ,
+	data->bw = ADXL372_BW_200HZ,
 #elif CONFIG_ADXL372_BW_400HZ
-	cfg->bw = ADXL372_BW_400HZ,
+	data->bw = ADXL372_BW_400HZ,
 #elif CONFIG_ADXL372_BW_800HZ
-	cfg->bw = ADXL372_BW_800HZ,
+	data->bw = ADXL372_BW_800HZ,
 #elif CONFIG_ADXL372_BW_1600HZ
-	cfg->bw = ADXL372_BW_1600HZ,
+	data->bw = ADXL372_BW_1600HZ,
 #elif CONFIG_ADXL372_BW_3200HZ
-	cfg->bw = ADXL372_BW_3200HZ,
+	data->bw = ADXL372_BW_3200HZ,
 #elif CONFIG_ADXL372_LPF_DISABLE
-	cfg->bw = ADXL372_BW_LPF_DISABLED,
+	data->bw = ADXL372_BW_LPF_DISABLED,
 #endif
 
 #ifdef CONFIG_ADXL372_HPF_CORNER0
-	cfg->hpf = ADXL372_HPF_CORNER_0,
+	data->hpf = ADXL372_HPF_CORNER_0,
 #elif CONFIG_ADXL372_HPF_CORNER1
-	cfg->hpf = ADXL372_HPF_CORNER_1,
+	data->hpf = ADXL372_HPF_CORNER_1,
 #elif CONFIG_ADXL372_HPF_CORNER2
-	cfg->hpf = ADXL372_HPF_CORNER_2,
+	data->hpf = ADXL372_HPF_CORNER_2,
 #elif CONFIG_ADXL372_HPF_CORNER3
-	cfg->hpf = ADXL372_HPF_CORNER_3,
+	data->hpf = ADXL372_HPF_CORNER_3,
 #elif CONFIG_ADXL372_HPF_DISABLE
-	cfg->hpf = ADXL372_HPF_DISABLED,
+	data->hpf = ADXL372_HPF_DISABLED,
 #endif
 
 #ifdef CONFIG_ADXL372_TRIGGER
-	cfg->act_proc_mode = ADXL372_LINKED,
+	data->act_proc_mode = ADXL372_LINKED,
 #else
-	cfg->act_proc_mode = ADXL372_LOOPED,
+	data->act_proc_mode = ADXL372_LOOPED,
 #endif
-	cfg->th_mode = ADXL372_INSTANT_ON_LOW_TH,
-	cfg->autosleep = false,
-	cfg->wur = ADXL372_WUR_52ms,
+	data->th_mode = ADXL372_INSTANT_ON_LOW_TH,
+	data->autosleep = false,
+	data->wur = ADXL372_WUR_52ms,
 
-	cfg->activity_th.thresh = CONFIG_ADXL372_ACTIVITY_THRESHOLD / 100,
-	cfg->activity_th.referenced =
+	data->activity_th.thresh = CONFIG_ADXL372_ACTIVITY_THRESHOLD / 100,
+	data->activity_th.referenced =
 		IS_ENABLED(CONFIG_ADXL372_REFERENCED_ACTIVITY_DETECTION_MODE),
-	cfg->activity_th.enable = 1,
-	cfg->activity_time = CONFIG_ADXL372_ACTIVITY_TIME,
+	data->activity_th.enable = 1,
+	data->activity_time = CONFIG_ADXL372_ACTIVITY_TIME,
 
-	cfg->inactivity_th.thresh = CONFIG_ADXL372_INACTIVITY_THRESHOLD / 100,
-	cfg->inactivity_th.referenced =
+	data->inactivity_th.thresh = CONFIG_ADXL372_INACTIVITY_THRESHOLD / 100,
+	data->inactivity_th.referenced =
 		IS_ENABLED(CONFIG_ADXL372_REFERENCED_ACTIVITY_DETECTION_MODE),
-	cfg->inactivity_th.enable = 1,
-	cfg->inactivity_time = CONFIG_ADXL372_INACTIVITY_TIME,
+	data->inactivity_th.enable = 1,
+	data->inactivity_time = CONFIG_ADXL372_INACTIVITY_TIME,
 
-	cfg->filter_settle = ADXL372_FILTER_SETTLE_370,
-	cfg->fifo_config.fifo_mode = ADXL372_FIFO_STREAMED,
-	cfg->fifo_config.fifo_format = ADXL372_XYZ_PEAK_FIFO,
-	cfg->fifo_config.fifo_samples = 128,
+	data->filter_settle = ADXL372_FILTER_SETTLE_370,
+	data->fifo_config.fifo_mode = ADXL372_FIFO_STREAMED,
+	data->fifo_config.fifo_format = ADXL372_XYZ_PEAK_FIFO,
+	data->fifo_config.fifo_samples = 128,
 
-	cfg->op_mode = ADXL372_FULL_BW_MEASUREMENT,
+	data->op_mode = ADXL372_FULL_BW_MEASUREMENT,
 
 	/* Device settings */
 	ret = adxl372_set_op_mode(dev, ADXL372_STANDBY);
@@ -730,66 +751,66 @@ static int adxl372_probe(const struct device *dev)
 		return ret;
 	}
 
-	ret = adxl372_set_hpf_corner(dev, cfg->hpf);
+	ret = adxl372_set_hpf_corner(dev, data->hpf);
 	if (ret) {
 		return ret;
 	}
 
-	ret = adxl372_set_bandwidth(dev, cfg->bw);
+	ret = adxl372_set_bandwidth(dev, data->bw);
 	if (ret) {
 		return ret;
 	}
 
-	ret = adxl372_set_odr(dev, cfg->odr);
+	ret = adxl372_set_odr(dev, data->odr);
 	if (ret) {
 		return ret;
 	}
 
-	ret = adxl372_set_wakeup_rate(dev, cfg->wur);
+	ret = adxl372_set_wakeup_rate(dev, data->wur);
 	if (ret) {
 		return ret;
 	}
 
-	ret = adxl372_set_autosleep(dev, cfg->autosleep);
+	ret = adxl372_set_autosleep(dev, data->autosleep);
 	if (ret) {
 		return ret;
 	}
 
-	ret = adxl372_set_instant_on_th(dev, cfg->th_mode);
+	ret = adxl372_set_instant_on_th(dev, data->th_mode);
 	if (ret) {
 		return ret;
 	}
 
 	ret = adxl372_set_activity_threshold_xyz(dev, ADXL372_X_THRESH_ACT_H,
-						 &cfg->activity_th);
+						 &data->activity_th);
 	if (ret) {
 		return ret;
 	}
 
 	ret = adxl372_set_activity_threshold_xyz(dev, ADXL372_X_THRESH_INACT_H,
-						 &cfg->inactivity_th);
+						 &data->inactivity_th);
 	if (ret) {
 		return ret;
 	}
 
-	ret = adxl372_set_activity_time(dev, cfg->activity_time);
+	ret = adxl372_set_activity_time(dev, data->activity_time);
 	if (ret) {
 		return ret;
 	}
 
-	ret = adxl372_set_inactivity_time(dev, cfg->inactivity_time);
+	ret = adxl372_set_inactivity_time(dev, data->inactivity_time);
 	if (ret) {
 		return ret;
 	}
 
-	ret = adxl372_set_filter_settle(dev, cfg->filter_settle);
+	ret = adxl372_set_filter_settle(dev, data->filter_settle);
 	if (ret) {
 		return ret;
 	}
 
-	ret = adxl372_configure_fifo(dev, cfg->fifo_config.fifo_mode,
-				     cfg->fifo_config.fifo_format,
-				     cfg->fifo_config.fifo_samples);
+	ret = adxl372_configure_fifo(dev, data->fifo_config.fifo_mode,
+				     data->fifo_config.fifo_format,
+				     data->fifo_config.fifo_samples);
 	if (ret) {
 		return ret;
 	}
@@ -801,17 +822,17 @@ static int adxl372_probe(const struct device *dev)
 	}
 #endif
 
-	ret = adxl372_interrupt_config(dev, cfg->int1_config, cfg->int2_config);
+	ret = adxl372_interrupt_config(dev, data->int1_config, data->int2_config);
 	if (ret) {
 		return ret;
 	}
 
-	ret = adxl372_set_op_mode(dev, cfg->op_mode);
+	ret = adxl372_set_op_mode(dev, data->op_mode);
 	if (ret) {
 		return ret;
 	}
 
-	return adxl372_set_act_proc_mode(dev, cfg->act_proc_mode);
+	return adxl372_set_act_proc_mode(dev, data->act_proc_mode);
 }
 
 static int adxl372_init(const struct device *dev)
@@ -872,8 +893,8 @@ static int adxl372_init(const struct device *dev)
 	}
 
 #define ADXL372_DEFINE_SPI(inst)					\
-	static struct lsm6dsl_data lsm6dsl_data_##inst;			\
-	static const struct lsm6dsl_config lsm6dsl_config_##inst =	\
+	static struct adxl372_data adxl372_data_##inst;			\
+	static const struct adxl372_dev_config adxl372_config_##inst =	\
 		ADXL372_CONFIG_SPI(inst);				\
 	ADXL372_DEVICE_INIT(inst)
 
@@ -883,15 +904,15 @@ static int adxl372_init(const struct device *dev)
 
 #define ADXL372_CONFIG_I2C(inst)					\
 	{								\
-		.bus_init = lsm6dsl_i2c_init,				\
-		.bus_cfg.i2c = I2C_DT_SPEC_INST_GET(inst),		\
+		.bus_init = adxl372_i2c_init,				\
+		.i2c = I2C_DT_SPEC_INST_GET(inst),			\
 		COND_CODE_1(DT_INST_NODE_HAS_PROP(inst, irq_gpios),	\
 		(ADXL372_CFG_IRQ(inst)), ())				\
 	}
 
 #define ADXL372_DEFINE_I2C(inst)					\
-	static struct lsm6dsl_data lsm6dsl_data_##inst;			\
-	static const struct lsm6dsl_config lsm6dsl_config_##inst =	\
+	static struct adxl372_data adxl372_data_##inst;			\
+	static const struct adxl372_dev_config adxl372_config_##inst =	\
 		ADXL372_CONFIG_I2C(inst);				\
 	ADXL372_DEVICE_INIT(inst)
 /*
