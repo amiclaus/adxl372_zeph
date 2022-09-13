@@ -7,7 +7,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#define DT_DRV_COMPAT st_adxl372
+#define DT_DRV_COMPAT adi_adxl372
 
 #include <string.h>
 #include <zephyr/logging/log.h>
