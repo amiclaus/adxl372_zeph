@@ -284,17 +284,40 @@ struct adxl372_transfer_function {
 	int (*read_reg_multiple)(const struct device *dev, uint8_t reg_addr,
 				 uint8_t *value, uint16_t len);
 	int (*write_reg)(const struct device *dev, uint8_t reg_addr,
-			 uint8_t *value, uint8_t len);
+			 uint8_t value);
 	int (*read_reg)(const struct device *dev, uint8_t reg_addr,
 			uint8_t *value);
 	int (*write_reg_mask)(const struct device *dev, uint8_t reg_addr,
-			      uint8_t mask, uint8_t value);
+			      uint32_t mask, uint8_t value);
 };
 
 struct adxl372_data {
 	struct adxl372_xyz_accel_data sample;
-	struct adxl372_fifo_config fifo_config;
 	const struct adxl372_transfer_function *hw_tf;
+
+	bool max_peak_detect_mode;
+
+	/* Device Settings */
+	bool autosleep;
+
+	struct adxl372_activity_threshold activity_th;
+	struct adxl372_activity_threshold activity2_th;
+	struct adxl372_activity_threshold inactivity_th;
+	struct adxl372_fifo_config fifo_config;
+
+	enum adxl372_bandwidth bw;
+	enum adxl372_hpf_corner hpf;
+	enum adxl372_odr odr;
+	enum adxl372_wakeup_rate wur;
+	enum adxl372_act_proc_mode act_proc_mode;
+	enum adxl372_instant_on_th_mode	th_mode;
+	enum adxl372_filter_settle filter_settle;
+	enum adxl372_op_mode op_mode;
+
+	uint16_t inactivity_time;
+	uint8_t activity_time;
+	uint8_t int1_config;
+	uint8_t int2_config;
 
 #ifdef CONFIG_ADXL372_TRIGGER
 	struct gpio_callback gpio_cb;
@@ -326,29 +349,6 @@ struct adxl372_dev_config {
 #ifdef CONFIG_ADXL372_TRIGGER
 	struct gpio_dt_spec interrupt;
 #endif
-	bool max_peak_detect_mode;
-
-	/* Device Settings */
-	bool autosleep;
-
-	struct adxl372_activity_threshold activity_th;
-	struct adxl372_activity_threshold activity2_th;
-	struct adxl372_activity_threshold inactivity_th;
-	struct adxl372_fifo_config fifo_config;
-
-	enum adxl372_bandwidth bw;
-	enum adxl372_hpf_corner hpf;
-	enum adxl372_odr odr;
-	enum adxl372_wakeup_rate wur;
-	enum adxl372_act_proc_mode act_proc_mode;
-	enum adxl372_instant_on_th_mode	th_mode;
-	enum adxl372_filter_settle filter_settle;
-	enum adxl372_op_mode op_mode;
-
-	uint16_t inactivity_time;
-	uint8_t activity_time;
-	uint8_t int1_config;
-	uint8_t int2_config;
 };
 
 #ifdef CONFIG_ADXL372_TRIGGER
