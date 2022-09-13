@@ -110,9 +110,10 @@ int adxl372_spi_init(const struct device *dev)
 
 	data->hw_tf = &adxl372_spi_transfer_fn;
 
-	if (!spi_is_ready(&config->spi) {
+	if (!spi_is_ready(&config->spi))
 		return -ENODEV;
-	}
 
 	return 0;
 }
+
+#endif /* DT_ANY_INST_ON_BUS_STATUS_OKAY(spi) */
