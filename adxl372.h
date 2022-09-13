@@ -7,12 +7,19 @@
 #ifndef ZEPHYR_DRIVERS_SENSOR_ADXL372_ADXL372_H_
 #define ZEPHYR_DRIVERS_SENSOR_ADXL372_ADXL372_H_
 
+#include <zephyr/drivers/sensor.h>
 #include <zephyr/types.h>
 #include <zephyr/device.h>
 #include <zephyr/drivers/gpio.h>
-#include <zephyr/drivers/spi.h>
-#include <zephyr/drivers/i2c.h>
 #include <zephyr/sys/util.h>
+
+#if DT_ANY_INST_ON_BUS_STATUS_OKAY(spi)
+#include <zephyr/drivers/spi.h>
+#endif /* DT_ANY_INST_ON_BUS_STATUS_OKAY(spi) */
+
+#if DT_ANY_INST_ON_BUS_STATUS_OKAY(i2c)
+#include <zephyr/drivers/i2c.h>
+#endif /* DT_ANY_INST_ON_BUS_STATUS_OKAY(i2c) */
 
 /*
  * ADXL372 registers definition
@@ -350,6 +357,9 @@ struct adxl372_dev_config {
 	struct gpio_dt_spec interrupt;
 #endif
 };
+
+int adxl372_spi_init(const struct device *dev);
+int adxl372_i2c_init(const struct device *dev);
 
 #ifdef CONFIG_ADXL372_TRIGGER
 int adxl372_get_status(const struct device *dev,
