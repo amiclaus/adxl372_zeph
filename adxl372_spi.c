@@ -76,7 +76,6 @@ static int adxl372_spi_reg_write(const struct device *dev,
 				  &reg_data, 1);
 }
 
-
 int adxl372_spi_reg_write_mask(const struct device *dev,
 			       uint8_t reg_addr,
 			       uint32_t mask,
