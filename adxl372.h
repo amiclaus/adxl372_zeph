@@ -285,8 +285,6 @@ struct adxl372_xyz_accel_data {
 	int16_t z;
 };
 
-struct adxl372_data;
-
 struct adxl372_transfer_function {
 	int (*read_reg_multiple)(const struct device *dev, uint8_t reg_addr,
 				 uint8_t *value, uint16_t len);
