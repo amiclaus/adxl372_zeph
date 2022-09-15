@@ -70,7 +70,7 @@ int adxl372_i2c_reg_write_mask(const struct device *dev,
 	int ret;
 	uint8_t tmp;
 
-	ret = adxl372_reg_read(dev, reg_addr, &tmp);
+	ret = adxl372_i2c_reg_read(dev, reg_addr, &tmp);
 	if (ret) {
 		return ret;
 	}
@@ -78,7 +78,7 @@ int adxl372_i2c_reg_write_mask(const struct device *dev,
 	tmp &= ~mask;
 	tmp |= data;
 
-	return adxl372_reg_write(dev, reg_addr, tmp);
+	return adxl372_i2c_reg_write(dev, reg_addr, tmp);
 }
 
 static const struct adxl372_transfer_function adxl372_i2c_transfer_fn = {
@@ -95,7 +95,7 @@ int adxl372_i2c_init(const struct device *dev)
 
 	data->hw_tf = &adxl372_i2c_transfer_fn;
 
-	if (!device_is_ready(&config->i2c) {
+	if (!device_is_ready(&config->i2c.bus)) {
 		return -ENODEV;
 	}
 
