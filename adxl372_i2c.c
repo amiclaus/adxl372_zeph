@@ -95,7 +95,7 @@ int adxl372_i2c_init(const struct device *dev)
 
 	data->hw_tf = &adxl372_i2c_transfer_fn;
 
-	if (!device_is_ready(&config->i2c.bus)) {
+	if (!device_is_ready(config->i2c.bus)) {
 		return -ENODEV;
 	}
 
