@@ -349,7 +349,7 @@ struct adxl372_dev_config {
 #endif
 #if DT_ANY_INST_ON_BUS_STATUS_OKAY(spi)
 	struct spi_dt_spec spi;
-#endif /* CONFIG_ADXL372_SPI */
+#endif
 	int (*bus_init)(const struct device *dev);
 #ifdef CONFIG_ADXL372_TRIGGER
 	struct gpio_dt_spec interrupt;
