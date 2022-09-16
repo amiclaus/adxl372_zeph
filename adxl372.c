@@ -884,7 +884,7 @@ static int adxl372_init(const struct device *dev)
 #define ADXL372_CONFIG_SPI(inst)						\
 	{									\
 		.bus_init = adxl372_spi_init,					\
-		.spi = SPI_DT_SPEC_INST_GET(inst, SPI_WORD_SET(8) | 		\
+		.spi = SPI_DT_SPEC_INST_GET(inst, SPI_WORD_SET(8) |		\
 					SPI_TRANSFER_MSB, 0),			\
 		COND_CODE_1(DT_INST_NODE_HAS_PROP(inst, int1_gpios),		\
 		(ADXL372_CFG_IRQ(inst)), ())					\
