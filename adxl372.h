@@ -310,9 +310,6 @@ struct adxl372_data {
 	struct adxl372_activity_threshold inactivity_th;
 	struct adxl372_fifo_config fifo_config;
 
-	enum adxl372_bandwidth bw;
-	enum adxl372_hpf_corner hpf;
-	enum adxl372_odr odr;
 	enum adxl372_wakeup_rate wur;
 	enum adxl372_act_proc_mode act_proc_mode;
 	enum adxl372_instant_on_th_mode	th_mode;
@@ -354,6 +351,10 @@ struct adxl372_dev_config {
 #ifdef CONFIG_ADXL372_TRIGGER
 	struct gpio_dt_spec interrupt;
 #endif
+
+	enum adxl372_bandwidth bw;
+	enum adxl372_hpf_corner hpf;
+	enum adxl372_odr odr;
 };
 
 int adxl372_spi_init(const struct device *dev);

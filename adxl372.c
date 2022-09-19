@@ -153,7 +153,7 @@ static int adxl372_set_bandwidth(const struct device *dev,
 /**
  * Select the desired high-pass filter corner.
  * @param dev - The device structure.
- * @param bw - bandwidth.
+ * @param c - bandwidth.
  *		Accepted values: ADXL372_HPF_CORNER_0
  *				 ADXL372_HPF_CORNER_1
  *				 ADXL372_HPF_CORNER_2
@@ -652,6 +652,7 @@ static const struct sensor_driver_api adxl372_api_funcs = {
 
 static int adxl372_probe(const struct device *dev)
 {
+	const struct adxl372_dev_config *cfg = dev->config;
 	struct adxl372_data *data = dev->data;
 	uint8_t dev_id, part_id;
 	int ret;
@@ -671,44 +672,6 @@ static int adxl372_probe(const struct device *dev)
 	}
 
 	data->max_peak_detect_mode = IS_ENABLED(CONFIG_ADXL372_PEAK_DETECT_MODE),
-
-#ifdef CONFIG_ADXL372_ODR_400HZ
-	data->odr = ADXL372_ODR_400HZ,
-#elif CONFIG_ADXL372_ODR_800HZ
-	data->odr = ADXL372_ODR_800HZ,
-#elif CONFIG_ADXL372_ODR_1600HZ
-	data->odr = ADXL372_ODR_1600HZ,
-#elif CONFIG_ADXL372_ODR_3200HZ
-	data->odr = ADXL372_ODR_3200HZ,
-#elif CONFIG_ADXL372_ODR_6400HZ
-	data->odr = ADXL372_ODR_6400HZ,
-#endif
-
-#ifdef CONFIG_ADXL372_BW_200HZ
-	data->bw = ADXL372_BW_200HZ,
-#elif CONFIG_ADXL372_BW_400HZ
-	data->bw = ADXL372_BW_400HZ,
-#elif CONFIG_ADXL372_BW_800HZ
-	data->bw = ADXL372_BW_800HZ,
-#elif CONFIG_ADXL372_BW_1600HZ
-	data->bw = ADXL372_BW_1600HZ,
-#elif CONFIG_ADXL372_BW_3200HZ
-	data->bw = ADXL372_BW_3200HZ,
-#elif CONFIG_ADXL372_LPF_DISABLE
-	data->bw = ADXL372_BW_LPF_DISABLED,
-#endif
-
-#ifdef CONFIG_ADXL372_HPF_CORNER0
-	data->hpf = ADXL372_HPF_CORNER_0,
-#elif CONFIG_ADXL372_HPF_CORNER1
-	data->hpf = ADXL372_HPF_CORNER_1,
-#elif CONFIG_ADXL372_HPF_CORNER2
-	data->hpf = ADXL372_HPF_CORNER_2,
-#elif CONFIG_ADXL372_HPF_CORNER3
-	data->hpf = ADXL372_HPF_CORNER_3,
-#elif CONFIG_ADXL372_HPF_DISABLE
-	data->hpf = ADXL372_HPF_DISABLED,
-#endif
 
 #ifdef CONFIG_ADXL372_TRIGGER
 	data->act_proc_mode = ADXL372_LINKED,
@@ -749,17 +712,17 @@ static int adxl372_probe(const struct device *dev)
 		return ret;
 	}
 
-	ret = adxl372_set_hpf_corner(dev, data->hpf);
+	ret = adxl372_set_hpf_corner(dev, cfg->hpf);
 	if (ret) {
 		return ret;
 	}
 
-	ret = adxl372_set_bandwidth(dev, data->bw);
+	ret = adxl372_set_bandwidth(dev, cfg->bw);
 	if (ret) {
 		return ret;
 	}
 
-	ret = adxl372_set_odr(dev, data->odr);
+	ret = adxl372_set_odr(dev, cfg->odr);
 	if (ret) {
 		return ret;
 	}
@@ -886,6 +849,9 @@ static int adxl372_init(const struct device *dev)
 		.bus_init = adxl372_spi_init,					\
 		.spi = SPI_DT_SPEC_INST_GET(inst, SPI_WORD_SET(8) |		\
 					SPI_TRANSFER_MSB, 0),			\
+		.bw = DT_INST_PROP(inst, bw),					\
+		.hpf = DT_INST_PROP(inst, hpf),					\
+		.odr = DT_INST_PROP(inst, odr),					\
 		COND_CODE_1(DT_INST_NODE_HAS_PROP(inst, int1_gpios),		\
 		(ADXL372_CFG_IRQ(inst)), ())					\
 	}
@@ -904,6 +870,9 @@ static int adxl372_init(const struct device *dev)
 	{								\
 		.bus_init = adxl372_i2c_init,				\
 		.i2c = I2C_DT_SPEC_INST_GET(inst),			\
+		.bw = DT_INST_PROP(inst, bw),				\
+		.hpf = DT_INST_PROP(inst, hpf),				\
+		.odr = DT_INST_PROP(inst, odr),				\
 		COND_CODE_1(DT_INST_NODE_HAS_PROP(inst, int1_gpios),	\
 		(ADXL372_CFG_IRQ(inst)), ())				\
 	}
