@@ -7,7 +7,7 @@ properties:
       required: false
       default: 0
       description: |
-            Accelerometer sampling frequency (ODR). Default is 400Hz.
+            Accelerometer sampling frequency (ODR). Default is power on reset value.
               0 # 400Hz
               1 # 800Hz
               2 # 1600Hz
@@ -25,7 +25,7 @@ properties:
       required: false
       default: 12
       description: |
-            Low-Pass (Antialiasing) Filter corner frequency. Default is 200Hz.
+            Low-Pass (Antialiasing) Filter corner frequency. Default is power on reset value.
               0 # 200Hz
               1 # 400Hz
               2 # 800Hz
@@ -45,7 +45,7 @@ properties:
       required: false
       default: 4
       description: |
-            High-Pass Filter corner frequency. Default is ODR/210.
+            High-Pass Filter corner frequency. Default is power on reset value.
               0 # ODR/210
               1 # ODR/411
               2 # ODR/812
