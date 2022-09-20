@@ -32,10 +32,10 @@ static void adxl372_thread_cb(const struct device *dev)
 		/* In max peak mode we wait until we settle below the inactivity
 		 * threshold and then call the trigger handler.
 		 */
-		if (drv_data->max_peak_detect_mode &&
+		if (cfg->max_peak_detect_mode &&
 			ADXL372_STATUS_2_INACT(status2)) {
 			drv_data->th_handler(dev, &drv_data->th_trigger);
-		} else if (!drv_data->max_peak_detect_mode &&
+		} else if (!cfg->max_peak_detect_mode &&
 			(ADXL372_STATUS_2_INACT(status2) ||
 			ADXL372_STATUS_2_ACTIVITY(status2))) {
 			drv_data->th_handler(dev, &drv_data->th_trigger);
