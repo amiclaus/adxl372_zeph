@@ -535,7 +535,7 @@ static int adxl372_attr_set_thresh(const struct device *dev,
 				   enum sensor_attribute attr,
 				   const struct sensor_value *val)
 {
-	struct adxl372_data *data = dev->data;
+	const struct adxl372_dev_config *cfg = dev->config;
 	struct adxl372_activity_threshold threshold;
 	int64_t llvalue;
 	int32_t value;
@@ -551,8 +551,8 @@ static int adxl372_attr_set_thresh(const struct device *dev,
 	value = (int32_t) llvalue;
 
 	threshold.thresh = value;
-	threshold.enable = data->activity_th.enable;
-	threshold.referenced = data->activity_th.referenced;
+	threshold.enable = cfg->activity_th.enable;
+	threshold.referenced = cfg->activity_th.referenced;
 
 	if (attr ==  SENSOR_ATTR_UPPER_THRESH) {
 		reg = ADXL372_X_THRESH_ACT_H;
@@ -594,9 +594,10 @@ static int adxl372_attr_set(const struct device *dev,
 static int adxl372_sample_fetch(const struct device *dev,
 				enum sensor_channel chan)
 {
+	const struct adxl372_dev_config *cfg = dev->config;
 	struct adxl372_data *data = dev->data;
 
-	return adxl372_get_accel_data(dev, data->max_peak_detect_mode,
+	return adxl372_get_accel_data(dev, cfg->max_peak_detect_mode,
 				      &data->sample);
 }
 
@@ -671,35 +672,12 @@ static int adxl372_probe(const struct device *dev)
 		return -ENODEV;
 	}
 
-	data->max_peak_detect_mode = IS_ENABLED(CONFIG_ADXL372_PEAK_DETECT_MODE),
-
 #ifdef CONFIG_ADXL372_TRIGGER
 	data->act_proc_mode = ADXL372_LINKED,
 #else
 	data->act_proc_mode = ADXL372_LOOPED,
 #endif
-	data->th_mode = ADXL372_INSTANT_ON_LOW_TH,
-	data->autosleep = false,
-	data->wur = ADXL372_WUR_52ms,
 
-	data->activity_th.thresh = CONFIG_ADXL372_ACTIVITY_THRESHOLD / 100,
-	data->activity_th.referenced =
-		IS_ENABLED(CONFIG_ADXL372_REFERENCED_ACTIVITY_DETECTION_MODE),
-	data->activity_th.enable = 1,
-	data->activity_time = CONFIG_ADXL372_ACTIVITY_TIME,
-
-	data->inactivity_th.thresh = CONFIG_ADXL372_INACTIVITY_THRESHOLD / 100,
-	data->inactivity_th.referenced =
-		IS_ENABLED(CONFIG_ADXL372_REFERENCED_ACTIVITY_DETECTION_MODE),
-	data->inactivity_th.enable = 1,
-	data->inactivity_time = CONFIG_ADXL372_INACTIVITY_TIME,
-
-	data->filter_settle = ADXL372_FILTER_SETTLE_370,
-	data->fifo_config.fifo_mode = ADXL372_FIFO_STREAMED,
-	data->fifo_config.fifo_format = ADXL372_XYZ_PEAK_FIFO,
-	data->fifo_config.fifo_samples = 128,
-
-	data->op_mode = ADXL372_FULL_BW_MEASUREMENT,
 
 	/* Device settings */
 	ret = adxl372_set_op_mode(dev, ADXL372_STANDBY);
@@ -727,51 +705,51 @@ static int adxl372_probe(const struct device *dev)
 		return ret;
 	}
 
-	ret = adxl372_set_wakeup_rate(dev, data->wur);
+	ret = adxl372_set_wakeup_rate(dev, cfg->wur);
 	if (ret) {
 		return ret;
 	}
 
-	ret = adxl372_set_autosleep(dev, data->autosleep);
+	ret = adxl372_set_autosleep(dev, cfg->autosleep);
 	if (ret) {
 		return ret;
 	}
 
-	ret = adxl372_set_instant_on_th(dev, data->th_mode);
+	ret = adxl372_set_instant_on_th(dev, cfg->th_mode);
 	if (ret) {
 		return ret;
 	}
 
 	ret = adxl372_set_activity_threshold_xyz(dev, ADXL372_X_THRESH_ACT_H,
-						 &data->activity_th);
+						 &cfg->activity_th);
 	if (ret) {
 		return ret;
 	}
 
 	ret = adxl372_set_activity_threshold_xyz(dev, ADXL372_X_THRESH_INACT_H,
-						 &data->inactivity_th);
+						 &cfg->inactivity_th);
 	if (ret) {
 		return ret;
 	}
 
-	ret = adxl372_set_activity_time(dev, data->activity_time);
+	ret = adxl372_set_activity_time(dev, cfg->activity_time);
 	if (ret) {
 		return ret;
 	}
 
-	ret = adxl372_set_inactivity_time(dev, data->inactivity_time);
+	ret = adxl372_set_inactivity_time(dev, cfg->inactivity_time);
 	if (ret) {
 		return ret;
 	}
 
-	ret = adxl372_set_filter_settle(dev, data->filter_settle);
+	ret = adxl372_set_filter_settle(dev, cfg->filter_settle);
 	if (ret) {
 		return ret;
 	}
 
-	ret = adxl372_configure_fifo(dev, data->fifo_config.fifo_mode,
-				     data->fifo_config.fifo_format,
-				     data->fifo_config.fifo_samples);
+	ret = adxl372_configure_fifo(dev, cfg->fifo_config.fifo_mode,
+				     cfg->fifo_config.fifo_format,
+				     cfg->fifo_config.fifo_samples);
 	if (ret) {
 		return ret;
 	}
@@ -783,12 +761,12 @@ static int adxl372_probe(const struct device *dev)
 	}
 #endif
 
-	ret = adxl372_interrupt_config(dev, data->int1_config, data->int2_config);
+	ret = adxl372_interrupt_config(dev, cfg->int1_config, cfg->int2_config);
 	if (ret) {
 		return ret;
 	}
 
-	ret = adxl372_set_op_mode(dev, data->op_mode);
+	ret = adxl372_set_op_mode(dev, cfg->op_mode);
 	if (ret) {
 		return ret;
 	}
@@ -844,16 +822,38 @@ static int adxl372_init(const struct device *dev)
 #define ADXL372_CFG_IRQ(inst)
 #endif /* CONFIG_ADXL372_TRIGGER */
 
-#define ADXL372_CONFIG_SPI(inst)						\
-	{									\
-		.bus_init = adxl372_spi_init,					\
-		.spi = SPI_DT_SPEC_INST_GET(inst, SPI_WORD_SET(8) |		\
-					SPI_TRANSFER_MSB, 0),			\
-		.bw = DT_INST_PROP(inst, bw),					\
-		.hpf = DT_INST_PROP(inst, hpf),					\
-		.odr = DT_INST_PROP(inst, odr),					\
-		COND_CODE_1(DT_INST_NODE_HAS_PROP(inst, int1_gpios),		\
-		(ADXL372_CFG_IRQ(inst)), ())					\
+#define ADXL372_CONFIG(inst)								\
+		.bw = DT_INST_PROP(inst, bw),						\
+		.hpf = DT_INST_PROP(inst, hpf),						\
+		.odr = DT_INST_PROP(inst, odr),						\
+		.max_peak_detect_mode = IS_ENABLED(CONFIG_ADXL372_PEAK_DETECT_MODE),	\
+		.th_mode = ADXL372_INSTANT_ON_LOW_TH,					\
+		.autosleep = false,							\
+		.wur = ADXL372_WUR_52ms,						\
+		.activity_th.thresh = CONFIG_ADXL372_ACTIVITY_THRESHOLD / 100,		\
+		.activity_th.referenced =						\
+			IS_ENABLED(CONFIG_ADXL372_REFERENCED_ACTIVITY_DETECTION_MODE),	\
+		.activity_th.enable = 1,						\
+		.activity_time = CONFIG_ADXL372_ACTIVITY_TIME,				\
+		.inactivity_th.thresh = CONFIG_ADXL372_INACTIVITY_THRESHOLD / 100,	\
+		.inactivity_th.referenced =						\
+			IS_ENABLED(CONFIG_ADXL372_REFERENCED_ACTIVITY_DETECTION_MODE),	\
+		.inactivity_th.enable = 1,						\
+		.inactivity_time = CONFIG_ADXL372_INACTIVITY_TIME,			\
+		.filter_settle = ADXL372_FILTER_SETTLE_370,				\
+		.fifo_config.fifo_mode = ADXL372_FIFO_STREAMED,				\
+		.fifo_config.fifo_format = ADXL372_XYZ_PEAK_FIFO,			\
+		.fifo_config.fifo_samples = 128,					\
+		.op_mode = ADXL372_FULL_BW_MEASUREMENT,					\
+
+#define ADXL372_CONFIG_SPI(inst)					\
+	{								\
+		.bus_init = adxl372_spi_init,				\
+		.spi = SPI_DT_SPEC_INST_GET(inst, SPI_WORD_SET(8) |	\
+					SPI_TRANSFER_MSB, 0),		\
+		ADXL372_CONFIG(inst)					\
+		COND_CODE_1(DT_INST_NODE_HAS_PROP(inst, int1_gpios),	\
+		(ADXL372_CFG_IRQ(inst)), ())				\
 	}
 
 #define ADXL372_DEFINE_SPI(inst)					\
@@ -870,9 +870,7 @@ static int adxl372_init(const struct device *dev)
 	{								\
 		.bus_init = adxl372_i2c_init,				\
 		.i2c = I2C_DT_SPEC_INST_GET(inst),			\
-		.bw = DT_INST_PROP(inst, bw),				\
-		.hpf = DT_INST_PROP(inst, hpf),				\
-		.odr = DT_INST_PROP(inst, odr),				\
+		ADXL372_CONFIG(inst)					\
 		COND_CODE_1(DT_INST_NODE_HAS_PROP(inst, int1_gpios),	\
 		(ADXL372_CFG_IRQ(inst)), ())				\
 	}

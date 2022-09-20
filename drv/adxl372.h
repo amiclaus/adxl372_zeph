@@ -299,28 +299,8 @@ struct adxl372_transfer_function {
 struct adxl372_data {
 	struct adxl372_xyz_accel_data sample;
 	const struct adxl372_transfer_function *hw_tf;
-
-	bool max_peak_detect_mode;
-
-	/* Device Settings */
-	bool autosleep;
-
-	struct adxl372_activity_threshold activity_th;
-	struct adxl372_activity_threshold activity2_th;
-	struct adxl372_activity_threshold inactivity_th;
 	struct adxl372_fifo_config fifo_config;
-
-	enum adxl372_wakeup_rate wur;
 	enum adxl372_act_proc_mode act_proc_mode;
-	enum adxl372_instant_on_th_mode	th_mode;
-	enum adxl372_filter_settle filter_settle;
-	enum adxl372_op_mode op_mode;
-
-	uint16_t inactivity_time;
-	uint8_t activity_time;
-	uint8_t int1_config;
-	uint8_t int2_config;
-
 #ifdef CONFIG_ADXL372_TRIGGER
 	struct gpio_callback gpio_cb;
 
@@ -355,6 +335,26 @@ struct adxl372_dev_config {
 	enum adxl372_bandwidth bw;
 	enum adxl372_hpf_corner hpf;
 	enum adxl372_odr odr;
+
+	bool max_peak_detect_mode;
+
+	/* Device Settings */
+	bool autosleep;
+
+	struct adxl372_activity_threshold activity_th;
+	struct adxl372_activity_threshold activity2_th;
+	struct adxl372_activity_threshold inactivity_th;
+	struct adxl372_fifo_config fifo_config;
+
+	enum adxl372_wakeup_rate wur;
+	enum adxl372_instant_on_th_mode	th_mode;
+	enum adxl372_filter_settle filter_settle;
+	enum adxl372_op_mode op_mode;
+
+	uint16_t inactivity_time;
+	uint8_t activity_time;
+	uint8_t int1_config;
+	uint8_t int2_config;
 };
 
 int adxl372_spi_init(const struct device *dev);
