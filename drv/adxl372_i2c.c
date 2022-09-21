@@ -45,17 +45,17 @@ static int adxl372_i2c_reg_read(const struct device *dev, uint8_t reg_addr,
 }
 
 static int adxl372_i2c_reg_read_multiple(const struct device *dev,
-				      uint8_t reg_addr,
-				      uint8_t *reg_data,
-				      uint16_t count)
+					 uint8_t reg_addr,
+					 uint8_t *reg_data,
+					 uint16_t count)
 {
 	return adxl372_bus_access(dev, ADXL372_REG_READ(reg_addr),
 				  reg_data, count);
 }
 
 static int adxl372_i2c_reg_write(const struct device *dev,
-			      uint8_t reg_addr,
-			      uint8_t reg_data)
+				 uint8_t reg_addr,
+				 uint8_t reg_data)
 {
 	return adxl372_bus_access(dev, ADXL372_REG_WRITE(reg_addr),
 				  &reg_data, 1);

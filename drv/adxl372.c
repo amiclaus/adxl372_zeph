@@ -93,8 +93,8 @@ static int adxl372_set_op_mode(const struct device *dev,
 	struct adxl372_data *data = dev->data;
 
 	return data->hw_tf->write_reg_mask(dev, ADXL372_POWER_CTL,
-				      ADXL372_POWER_CTL_MODE_MSK,
-				      ADXL372_POWER_CTL_MODE(op_mode));
+					   ADXL372_POWER_CTL_MODE_MSK,
+					   ADXL372_POWER_CTL_MODE(op_mode));
 }
 
 /**
@@ -110,8 +110,8 @@ static int adxl372_set_autosleep(const struct device *dev, bool enable)
 	struct adxl372_data *data = dev->data;
 
 	return data->hw_tf->write_reg_mask(dev, ADXL372_MEASURE,
-				      ADXL372_MEASURE_AUTOSLEEP_MSK,
-				      ADXL372_MEASURE_AUTOSLEEP_MODE(enable));
+					   ADXL372_MEASURE_AUTOSLEEP_MSK,
+					   ADXL372_MEASURE_AUTOSLEEP_MODE(enable));
 }
 
 /**
@@ -140,14 +140,14 @@ static int adxl372_set_bandwidth(const struct device *dev,
 	}
 
 	ret = data->hw_tf->write_reg_mask(dev, ADXL372_POWER_CTL,
-				     ADXL372_POWER_CTL_LPF_DIS_MSK, mask);
+					  ADXL372_POWER_CTL_LPF_DIS_MSK, mask);
 	if (ret) {
 		return ret;
 	}
 
 	return data->hw_tf->write_reg_mask(dev, ADXL372_MEASURE,
-				      ADXL372_MEASURE_BANDWIDTH_MSK,
-				      ADXL372_MEASURE_BANDWIDTH_MODE(bw));
+					   ADXL372_MEASURE_BANDWIDTH_MSK,
+					   ADXL372_MEASURE_BANDWIDTH_MODE(bw));
 }
 
 /**
@@ -176,7 +176,7 @@ static int adxl372_set_hpf_corner(const struct device *dev,
 	}
 
 	ret = data->hw_tf->write_reg_mask(dev, ADXL372_POWER_CTL,
-				     ADXL372_POWER_CTL_HPF_DIS_MSK, mask);
+					  ADXL372_POWER_CTL_HPF_DIS_MSK, mask);
 	if (ret) {
 		return ret;
 	}
@@ -200,8 +200,8 @@ static int adxl372_set_act_proc_mode(const struct device *dev,
 	struct adxl372_data *data = dev->data;
 
 	return data->hw_tf->write_reg_mask(dev, ADXL372_MEASURE,
-				      ADXL372_MEASURE_LINKLOOP_MSK,
-				      ADXL372_MEASURE_LINKLOOP_MODE(mode));
+					   ADXL372_MEASURE_LINKLOOP_MSK,
+					   ADXL372_MEASURE_LINKLOOP_MODE(mode));
 }
 
 /**
@@ -220,8 +220,8 @@ static int adxl372_set_odr(const struct device *dev, enum adxl372_odr odr)
 	struct adxl372_data *data = dev->data;
 
 	return data->hw_tf->write_reg_mask(dev, ADXL372_TIMING,
-				      ADXL372_TIMING_ODR_MSK,
-				      ADXL372_TIMING_ODR_MODE(odr));
+					   ADXL372_TIMING_ODR_MSK,
+					   ADXL372_TIMING_ODR_MODE(odr));
 }
 
 /**
@@ -238,8 +238,8 @@ static int adxl372_set_instant_on_th(const struct device *dev,
 	struct adxl372_data *data = dev->data;
 
 	return data->hw_tf->write_reg_mask(dev, ADXL372_POWER_CTL,
-				ADXL372_POWER_CTL_INSTANT_ON_TH_MSK,
-				ADXL372_POWER_CTL_INSTANT_ON_TH_MODE(mode));
+					   ADXL372_POWER_CTL_INSTANT_ON_TH_MSK,
+					   ADXL372_POWER_CTL_INSTANT_ON_TH_MODE(mode));
 }
 
 /**
@@ -262,8 +262,8 @@ static int adxl372_set_wakeup_rate(const struct device *dev,
 	struct adxl372_data *data = dev->data;
 
 	return data->hw_tf->write_reg_mask(dev, ADXL372_TIMING,
-				      ADXL372_TIMING_WAKE_UP_RATE_MSK,
-				      ADXL372_TIMING_WAKE_UP_RATE_MODE(wur));
+					   ADXL372_TIMING_WAKE_UP_RATE_MSK,
+					   ADXL372_TIMING_WAKE_UP_RATE_MODE(wur));
 }
 
 /**
@@ -314,8 +314,8 @@ static int adxl372_set_filter_settle(const struct device *dev,
 	struct adxl372_data *data = dev->data;
 
 	return data->hw_tf->write_reg_mask(dev, ADXL372_POWER_CTL,
-				      ADXL372_POWER_CTL_FIL_SETTLE_MSK,
-				      ADXL372_POWER_CTL_FIL_SETTLE_MODE(mode));
+					   ADXL372_POWER_CTL_FIL_SETTLE_MSK,
+					   ADXL372_POWER_CTL_FIL_SETTLE_MODE(mode));
 }
 
 /**
@@ -491,7 +491,7 @@ static int adxl372_get_accel_data(const struct device *dev, bool maxpeak,
 	}
 
 	ret = data->hw_tf->read_reg_multiple(dev, maxpeak ? ADXL372_X_MAXPEAK_H :
-					ADXL372_X_DATA_H, buf, 6);
+					     ADXL372_X_DATA_H, buf, 6);
 
 	accel_data->x = (buf[0] << 8) | (buf[1] & 0xF0);
 	accel_data->y = (buf[2] << 8) | (buf[3] & 0xF0);
@@ -678,7 +678,6 @@ static int adxl372_probe(const struct device *dev)
 	data->act_proc_mode = ADXL372_LOOPED,
 #endif
 
-
 	/* Device settings */
 	ret = adxl372_set_op_mode(dev, ADXL372_STANDBY);
 	if (ret) {
@@ -781,7 +780,7 @@ static int adxl372_init(const struct device *dev)
 
 	ret = cfg->bus_init(dev);
 	if (ret < 0) {
-		LOG_ERR("Failed to initialize sensor bus\n");
+		LOG_ERR("Failed to initialize sensor bus");
 		return ret;
 	}
 
@@ -803,13 +802,13 @@ static int adxl372_init(const struct device *dev)
 
 #define ADXL372_DEVICE_INIT(inst)					\
 	DEVICE_DT_INST_DEFINE(inst,					\
-			    adxl372_init,				\
-			    NULL,					\
-			    &adxl372_data_##inst,			\
-			    &adxl372_config_##inst,			\
-			    POST_KERNEL,				\
-			    CONFIG_SENSOR_INIT_PRIORITY,		\
-			    &adxl372_api_funcs);
+			      adxl372_init,				\
+			      NULL,					\
+			      &adxl372_data_##inst,			\
+			      &adxl372_config_##inst,			\
+			      POST_KERNEL,				\
+			      CONFIG_SENSOR_INIT_PRIORITY,		\
+			      &adxl372_api_funcs);
 
 /*
  * Instantiation macros used when a device is on a SPI bus.
